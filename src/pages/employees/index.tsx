@@ -5,10 +5,7 @@ import { useSelector } from "react-redux";
 import Table, { type ColumnHeader } from "hrnet-ts-table";
 import "hrnet-ts-table/dist/index.css";
 
-
-
-
-function Layout({ content }) {
+function Layout({ content }:any) {
     return (
         <Flex>
             <div>
@@ -23,7 +20,7 @@ function Layout({ content }) {
 const PageListCurrentEmployees = () => {
     const dataList = useSelector((state:RootState) => state.employee)
 
-    const filterStreet = (a, b) => {
+    const filterStreet = (a: string, b: string) => {
         const streetA = a.split(' ');
         const streetB = b.split(' ');
       
@@ -44,7 +41,7 @@ const PageListCurrentEmployees = () => {
         }
         return 0;
       }
-    const filterDate = (a,b) => {
+    const filterDate = (a: string,b: string) => {
         const dateA = new Date(a.split('/').reverse().join('/'))
         const dateB = new Date(b.split('/').reverse().join('/'))
         return dateA.getTime() - dateB.getTime()

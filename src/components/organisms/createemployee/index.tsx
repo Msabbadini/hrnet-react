@@ -15,9 +15,7 @@ const CreateEmployee = () => {
             </div>
           </div>
           <div className="flex-auto px-4 lg:px-10 py-10 pt-0 ">
-            <CreateForm
-              keyId="create-employee"
-            />
+            <CreateForm/>
           </div>
         </div>
       </div>

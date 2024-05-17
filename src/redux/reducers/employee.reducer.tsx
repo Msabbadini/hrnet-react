@@ -1,5 +1,5 @@
-import { createSlice,PayloadAction } from "@reduxjs/toolkit";
-import MockData from "../../utils/MOCK_DATA.json";
+import { createSlice,type PayloadAction } from "@reduxjs/toolkit";
+
 interface Employee {
     firstName: string
     lastName: string

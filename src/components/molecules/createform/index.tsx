@@ -17,10 +17,10 @@ const schema = yup
   .object({
     firstName: yup.string().min(2).max(20),
     lastName: yup.string().min(2).max(20),
-    dateOfBirth: yup.date().test("Birth Date", "Must be a valid date", (value) => {
+    dateOfBirth: yup.date().test("Birth Date", "Must be a valid date", (value:any) => {
       return value;
     }),
-    startDate: yup.date().test("Start Date", "Must be a valid date", (value) => {
+    startDate: yup.date().test("Start Date", "Must be a valid date", (value:any) => {
       return value;
     }),
     department: yup.string(),
@@ -31,14 +31,14 @@ const schema = yup
   })
   .required();
 
-const CreateForm = ({ keyId = "" }) => {
+const CreateForm = () => {
   const { handleSubmit, formState: { errors }, register, control, reset } = useForm({ resolver: yupResolver(schema) });
   const dispatch = useDispatch();
-  const onCreate = (data) => {
+  const onCreate = (data :any) => {
     data.startDate = new Date(data.startDate).toLocaleDateString('fr-FR');
     data.dateOfBirth = new Date(data.dateOfBirth).toLocaleDateString('fr-FR');
     dispatch(addEmployee(data))
-    reset({ firstName: "", lastName: "", dateOfBirth: "", startDate: "", department: "Sales", street: "", city: "", state: "Alabama", zipCode: "" })
+    reset({ firstName: "", lastName: "", dateOfBirth: new Date(), startDate: new Date(), department: "Sales", street: "", city: "", state: "Alabama", zipCode: 0 })
     toast.success("Employee created successfully",{position: "bottom-right",})
   }
 
@@ -51,31 +51,31 @@ const CreateForm = ({ keyId = "" }) => {
       <div className="flex flex-wrap">
         <div className="w-full lg:w-6/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="firstName" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               First Name
             </label>
             <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               placeholder="Jane"
-              {...register(`firstName`, { required: true })}
+              {...register("firstName", { required: true })}
             />
             {errors.firstName && <ErrorText error={"First name must be at least 2 characters"} />}
           </div>
         </div>
         <div className="w-full lg:w-6/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="lastName" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Last Name
             </label>
             <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               placeholder="Doe"
-              {...register(`lastName`, { required: true })}
+              {...register("lastName", { required: true })}
             />
             {errors.lastName && <ErrorText error={"Last name must be at least 2 characters"} />}
           </div>
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="dateOfBirth" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Date of Birth
             </label>
             {/* <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"  
@@ -106,7 +106,7 @@ const CreateForm = ({ keyId = "" }) => {
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="startDate" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Start Date
             </label>
             <Controller
@@ -133,7 +133,7 @@ const CreateForm = ({ keyId = "" }) => {
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="department" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Department
             </label>
             <Dropdown
@@ -155,22 +155,22 @@ const CreateForm = ({ keyId = "" }) => {
       <div className="flex flex-wrap">
         <div className="w-full lg:w-12/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="street" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Street
             </label>
-            <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-              {...register(`street`, { required: true })}
+            <input  type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+              {...register("street", { required: true })}
             />
             {errors.street && <ErrorText error={"Please insert a street address"} />}
           </div>
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="city" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               City
             </label>
             <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-              {...register(`city`, { required: true })}
+              {...register("city", { required: true })}
             />
             {errors.city && <ErrorText error={errors.city.message} />}
           </div>
@@ -192,11 +192,11 @@ const CreateForm = ({ keyId = "" }) => {
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="zipCode" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Zip Code
             </label>
             <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-              {...register(`zipCode`, { required: true })}
+              {...register("zipCode", { required: true })}
             />
             {errors.zipCode && <ErrorText error={"Please insert a correct Zip code"} />}
           </div>
@@ -204,7 +204,7 @@ const CreateForm = ({ keyId = "" }) => {
         </div>
       </div>
       <div className="w-full px-4 flex justify-end mt-5">
-        <button className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="submit">
+        <button className="bg-green-700 text-white active:bg-green-700 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="submit">
           Create
         </button>
         <ToastContainer />
