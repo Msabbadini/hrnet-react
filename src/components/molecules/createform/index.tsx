@@ -11,22 +11,26 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from "react-redux";
 import { addEmployee } from "#/redux/reducers/employee.reducer";
-
+import {differenceInYears} from "date-fns";
 
 const schema = yup
   .object({
     firstName: yup.string().min(2).max(20),
     lastName: yup.string().min(2).max(20),
-    dateOfBirth: yup.date().test("Birth Date", "Must be a valid date", (value:any) => {
-      return value;
-    }),
-    startDate: yup.date().test("Start Date", "Must be a valid date", (value:any) => {
-      return value;
+    dateOfBirth: yup.date()
+    .test("Birth Date", "Must be to Date", (value:any) => value)
+    .test("Must be Major", "Must be at least 18 years old", (value:Date|undefined) => value ? differenceInYears(new Date(), value)>=18 : false),
+    startDate: yup.date()
+    .test("Birth Date", "Must be to Date", (value:any) => value)
+    .test("Start Date", "Must be 18 on start date", function(value:any) {
+      const res = value && this.options.parent.dateOfBirth ? differenceInYears(value, this.options.parent.dateOfBirth)>=18 : false
+      console.log(this, this.options, this.options.parent, value, yup.ref("dateOfBirth"), res, differenceInYears(value, this.options.parent.dateOfBirth))
+      return res
     }),
     department: yup.string(),
     street: yup.string().min(5),
     city: yup.string().min(3),
-    state: yup.string().min(3),
+    state: yup.string().min(1),
     zipCode: yup.number().positive().integer(),
   })
   .required();
@@ -54,7 +58,7 @@ const CreateForm = () => {
             <label htmlFor="firstName" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               First Name
             </label>
-            <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+            <input id="firstName" type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               placeholder="Jane"
               {...register("firstName", { required: true })}
             />
@@ -66,7 +70,7 @@ const CreateForm = () => {
             <label htmlFor="lastName" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Last Name
             </label>
-            <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+            <input id="lastName" type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               placeholder="Doe"
               {...register("lastName", { required: true })}
             />
@@ -75,6 +79,7 @@ const CreateForm = () => {
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
+            
             <label htmlFor="dateOfBirth" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Date of Birth
             </label>
@@ -83,10 +88,12 @@ const CreateForm = () => {
             
             /> */}
             <Controller
+            
               name="dateOfBirth"
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <DatePicker
+                id="dateOfBirth"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 block"
                   // type="date"
                   dateFormat="dd/MM/yyyy"
@@ -101,7 +108,7 @@ const CreateForm = () => {
                 />
               )}
             />
-            {errors.dateOfBirth && <ErrorText error={"Must be a valid Date"} />}
+            {errors.dateOfBirth && <ErrorText error={errors.dateOfBirth.message} />}
           </div>
         </div>
         <div className="w-full lg:w-4/12 px-4">
@@ -114,6 +121,7 @@ const CreateForm = () => {
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <DatePicker
+                id="startDate"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 "
                   // type="date"
                   dateFormat="dd/MM/yyyy"
@@ -128,7 +136,7 @@ const CreateForm = () => {
                 />
               )}
             />
-            {errors.startDate && <ErrorText error={"Must be a valid Date"} />}
+            {errors.startDate && <ErrorText error={errors.startDate.message} />}
           </div>
         </div>
         <div className="w-full lg:w-4/12 px-4">
@@ -137,6 +145,7 @@ const CreateForm = () => {
               Department
             </label>
             <Dropdown
+            id="department"
               register={register}
               name="department"
               registerOptions={{ required: true }}
@@ -158,7 +167,7 @@ const CreateForm = () => {
             <label htmlFor="street" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Street
             </label>
-            <input  type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+            <input id="street"  type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               {...register("street", { required: true })}
             />
             {errors.street && <ErrorText error={"Please insert a street address"} />}
@@ -169,7 +178,7 @@ const CreateForm = () => {
             <label htmlFor="city" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               City
             </label>
-            <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+            <input id="city" type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               {...register("city", { required: true })}
             />
             {errors.city && <ErrorText error={errors.city.message} />}
@@ -177,14 +186,15 @@ const CreateForm = () => {
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            <label className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
+            <label htmlFor="state" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               State
             </label>
             <Dropdown
+            id="state"
               register={register}
               name="state"
               registerOptions={{ required: true }}
-              options={states}
+              options={states.map((state) => ({ value: state.abbreviation, label: state.label }))}
               className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
             />
             {errors.state && <ErrorText error={errors.state?.message} />}
@@ -195,7 +205,7 @@ const CreateForm = () => {
             <label htmlFor="zipCode" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Zip Code
             </label>
-            <input type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+            <input id="zipCode" type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               {...register("zipCode", { required: true })}
             />
             {errors.zipCode && <ErrorText error={"Please insert a correct Zip code"} />}

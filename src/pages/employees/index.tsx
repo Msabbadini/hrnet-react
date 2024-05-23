@@ -47,6 +47,13 @@ const PageListCurrentEmployees = () => {
         return dateA.getTime() - dateB.getTime()
     }
 
+    const filterZipCode = (a: string, b: string) => {
+        const zipA = a.split("-").join("").split(" ").join("")
+        const zipB = b.split("-").join("").split(" ").join("")
+        return +zipA - (+zipB)
+
+    }
+
     const columns:Array<ColumnHeader> = [
         { sortKey: "firstName", title: "First Name",  },
         { sortKey: "lastName", title: "Last Name" },
@@ -56,7 +63,7 @@ const PageListCurrentEmployees = () => {
         { sortKey: "street", title: "Street", sort:filterStreet,  },
         { sortKey: "city", title: "City", enableSort: false},
         { sortKey: "state", title: "State" },
-        { sortKey: "zipCode", title: "Zip Code", type: "number" },
+        { sortKey: "zipCode", title: "Zip Code", sort:filterZipCode },
     ]
     return (
         <div>
@@ -64,7 +71,7 @@ const PageListCurrentEmployees = () => {
             <Layout
                 content={
                     <Flex className="flex flex-row">
-                        <div className="flex flex-col   w-full h-full ">
+                        <div className=" ">
                             <Table columns={columns} entries={dataList} />
                         </div>
                     </Flex>
