@@ -8,6 +8,19 @@
     margin: 0;
     
   }
-  .module-footer{
-    @apply bg-red-400;
+
+  /* .hrnet-table__searchbar{
+    @apply bg-teal-500;
   }
+  .hrnet-table__footer{
+    @apply bg-teal-500;
+  }
+  .hrnet-table__select{
+    @apply bg-teal-500 border-white;
+  }
+  .hrnet-table__pagination__link:hover{
+    @apply bg-teal-50 ;
+  }
+  .hrnet-table__pagination__link:hover .hrnet-table__pagination__span{
+    @apply text-black ;
+  } */
