@@ -7,26 +7,28 @@ import * as yup from "yup";
 import ErrorText from "../errortext";
 import { departments, states } from "#/utils/selectlist";
 import Dropdown from "#components/atoms/dropdown";
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from "react-redux";
 import { addEmployee } from "#/redux/reducers/employee.reducer";
-import {differenceInYears} from "date-fns";
+import { differenceInYears } from "date-fns";
+import Modal from 'react-modal-zinkat'
+import 'react-modal-zinkat/dist/index.css'
+import { useState } from "react";
 
 const schema = yup
   .object({
     firstName: yup.string().min(2).max(20),
     lastName: yup.string().min(2).max(20),
     dateOfBirth: yup.date()
-    .test("Birth Date", "Must be to Date", (value:any) => value)
-    .test("Must be Major", "Must be at least 18 years old", (value:Date|undefined) => value ? differenceInYears(new Date(), value)>=18 : false),
+      .test("Birth Date", "Must be to Date", (value: any) => value)
+      .test("Must be Major", "Must be at least 18 years old", (value: Date | undefined) => value ? differenceInYears(new Date(), value) >= 18 : false),
     startDate: yup.date()
-    .test("Birth Date", "Must be to Date", (value:any) => value)
-    .test("Start Date", "Must be 18 on start date", function(value:any) {
-      const res = value && this.options.parent.dateOfBirth ? differenceInYears(value, this.options.parent.dateOfBirth)>=18 : false
-      console.log(this, this.options, this.options.parent, value, yup.ref("dateOfBirth"), res, differenceInYears(value, this.options.parent.dateOfBirth))
-      return res
-    }),
+      .test("Birth Date", "Must be to Date", (value: any) => value)
+      .test("Start Date", "Must be 18 on start date", function (value: any) {
+        const res = value && this.parent.dateOfBirth ? differenceInYears(value, this.parent.dateOfBirth) >= 18 : false
+        console.log(this, this.options, this.parent, value, yup.ref("dateOfBirth"), res, differenceInYears(value, this.parent.dateOfBirth))
+        return res
+      }),
     department: yup.string(),
     street: yup.string().min(5),
     city: yup.string().min(3),
@@ -37,13 +39,25 @@ const schema = yup
 
 const CreateForm = () => {
   const { handleSubmit, formState: { errors }, register, control, reset } = useForm({ resolver: yupResolver(schema) });
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const openModal = () => {
+    
+    setModalOpen(true);
+  };
+  
+  const closeModal = (e:any) => {
+    e.preventDefault();
+    setModalOpen(false);
+  };
+
   const dispatch = useDispatch();
-  const onCreate = (data :any) => {
+  const onCreate = (data: any) => {
     data.startDate = new Date(data.startDate).toLocaleDateString('fr-FR');
     data.dateOfBirth = new Date(data.dateOfBirth).toLocaleDateString('fr-FR');
     dispatch(addEmployee(data))
     reset({ firstName: "", lastName: "", dateOfBirth: new Date(), startDate: new Date(), department: "Sales", street: "", city: "", state: "Alabama", zipCode: 0 })
-    toast.success("Employee created successfully",{position: "bottom-right",})
+    openModal();
   }
 
   return (
@@ -79,7 +93,7 @@ const CreateForm = () => {
         </div>
         <div className="w-full lg:w-4/12 px-4">
           <div className="relative w-full mb-3">
-            
+
             <label htmlFor="dateOfBirth" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Date of Birth
             </label>
@@ -88,12 +102,12 @@ const CreateForm = () => {
             
             /> */}
             <Controller
-            
+
               name="dateOfBirth"
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <DatePicker
-                id="dateOfBirth"
+                  id="dateOfBirth"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 block"
                   // type="date"
                   dateFormat="dd/MM/yyyy"
@@ -121,7 +135,7 @@ const CreateForm = () => {
               control={control}
               render={({ field: { onChange, onBlur, value } }) => (
                 <DatePicker
-                id="startDate"
+                  id="startDate"
                   className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 "
                   // type="date"
                   dateFormat="dd/MM/yyyy"
@@ -145,7 +159,7 @@ const CreateForm = () => {
               Department
             </label>
             <Dropdown
-            id="department"
+              id="department"
               register={register}
               name="department"
               registerOptions={{ required: true }}
@@ -167,7 +181,7 @@ const CreateForm = () => {
             <label htmlFor="street" className="block uppercase text-blueGray-600 text-xs font-bold mb-2" >
               Street
             </label>
-            <input id="street"  type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+            <input id="street" type="text" className="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
               {...register("street", { required: true })}
             />
             {errors.street && <ErrorText error={"Please insert a street address"} />}
@@ -190,7 +204,7 @@ const CreateForm = () => {
               State
             </label>
             <Dropdown
-            id="state"
+              id="state"
               register={register}
               name="state"
               registerOptions={{ required: true }}
@@ -217,7 +231,10 @@ const CreateForm = () => {
         <button className="bg-green-700 text-white active:bg-green-700 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150" type="submit">
           Create
         </button>
-        <ToastContainer />
+        <Modal isOpen={isModalOpen} onClose={closeModal} contentBtn="Close">
+
+        Employee created successfully
+      </Modal>
       </div>
     </form>
 

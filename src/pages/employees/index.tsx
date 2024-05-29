@@ -5,6 +5,8 @@ import { useSelector } from "react-redux";
 import Table, { type ColumnHeader } from "hrnet-ts-table";
 import "hrnet-ts-table/dist/index.css";
 
+
+
 function Layout({ content }:any) {
     return (
         <Flex>
